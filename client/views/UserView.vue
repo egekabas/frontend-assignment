@@ -9,9 +9,11 @@ const props = defineProps(["username"]);
 const username = ref(props.username);
 
 const loading = ref(true);
-const articles = ref([]);
+//es-lint-disable-next-line
+const articles = ref(Array<any>());
 const isValidated = ref(false);
-const validation = ref({});
+//es-lint-disable-next-line
+const validation = ref({} as any);
 
 async function loadValidation() {
   let res;
@@ -25,7 +27,7 @@ async function loadValidation() {
       isValidated.value = false;
       return;
     } else {
-      useToastStore().showToast({ message: e.toString(), style: "error" });
+      useToastStore().showToast({ message: e as string, style: "error" });
       return;
     }
   }

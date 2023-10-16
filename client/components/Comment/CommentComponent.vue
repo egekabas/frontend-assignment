@@ -6,8 +6,10 @@ import CreateCommentForm from "./CreateCommentForm.vue";
 const props = defineProps(["comment"]);
 
 const curComment = ref(props.comment);
-const prtComments = ref([]);
-const subComments = ref([]);
+//es-lint-disable-next-line
+const prtComments = ref(Array<any>());
+//es-lint-disable-next-line
+const subComments = ref(Array<any>());
 
 async function loadsubComments() {
   let res;

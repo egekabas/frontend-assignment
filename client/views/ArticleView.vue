@@ -19,7 +19,8 @@ const articleContent = ref("");
 const articleDate = ref("");
 const articleAuthor = ref("");
 
-const comments = ref([]);
+// eslint-disable-next-line
+const comments = ref(Array<any>());
 
 async function loadComments() {
   let res;
