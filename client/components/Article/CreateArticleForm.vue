@@ -2,13 +2,14 @@
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
+const title = ref("");
 const content = ref("");
 const emit = defineEmits(["refreshPosts"]);
 
-const createPost = async (content: string) => {
+const createArticle = async (title: string, content: string) => {
   try {
     await fetchy("api/posts", "POST", {
-      body: { content },
+      body: { title, content },
     });
   } catch (_) {
     return;
@@ -18,15 +19,17 @@ const createPost = async (content: string) => {
 };
 
 const emptyForm = () => {
+  title.value = "";
   content.value = "";
 };
 </script>
 
 <template>
-  <form @submit.prevent="createPost(content)">
-    <label for="content">Post Contents:</label>
-    <textarea id="content" v-model="content" placeholder="Create a post!" required> </textarea>
-    <button type="submit" class="pure-button-primary pure-button">Create Post</button>
+  <form @submit.prevent="createArticle(title, content)">
+    <label for="content">Post Article:</label>
+    <textarea id="title" class="title" v-model="title" placeholder="Title of your article!" required> </textarea>
+    <textarea id="content" v-model="content" placeholder="Type your article!" required> </textarea>
+    <button type="submit" class="pure-button-primary pure-button">Create Article</button>
   </form>
 </template>
 
@@ -38,6 +41,10 @@ form {
   flex-direction: column;
   gap: 0.5em;
   padding: 1em;
+}
+textarea.title {
+  font-size: large;
+  height: 2em;
 }
 
 textarea {

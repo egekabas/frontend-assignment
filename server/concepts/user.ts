@@ -16,6 +16,13 @@ export default class UserConcept {
     return { msg: "User created successfully!", user: await this.users.readOne({ _id }) };
   }
 
+  async checkAdminAccess(_id: ObjectId) {
+    const user = await this.users.readOne({ _id });
+    if (user?.username !== "root") {
+      throw new NotAllowedError("Admin authorization required");
+    }
+  }
+
   private sanitizeUser(user: UserDoc) {
     // eslint-disable-next-line
     const { password, ...rest } = user; // remove password

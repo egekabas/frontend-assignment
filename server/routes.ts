@@ -1,10 +1,9 @@
-import { ObjectId } from "mongodb";
-
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, User, WebSession } from "./app";
-import { PostDoc, PostOptions } from "./concepts/post";
-import { UserDoc } from "./concepts/user";
+import { ObjectId } from "mongodb";
+import { Article, Bio, CommentToArticle, CommentToComment, Subscripton, User, Validation, WebSession } from "./app";
+import { BadValuesError } from "./concepts/errors";
+import { ValidationNotFoundError } from "./concepts/validation";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
 
@@ -22,19 +21,16 @@ class Routes {
 
   @Router.get("/users/:username")
   async getUser(username: string) {
+    checkValid(username, "username");
     return await User.getUserByUsername(username);
   }
 
   @Router.post("/users")
   async createUser(session: WebSessionDoc, username: string, password: string) {
+    checkValid(username, "username");
+    checkValid(password, "password");
     WebSession.isLoggedOut(session);
     return await User.create(username, password);
-  }
-
-  @Router.patch("/users")
-  async updateUser(session: WebSessionDoc, update: Partial<UserDoc>) {
-    const user = WebSession.getUser(session);
-    return await User.update(user, update);
   }
 
   @Router.delete("/users")
@@ -46,6 +42,9 @@ class Routes {
 
   @Router.post("/login")
   async logIn(session: WebSessionDoc, username: string, password: string) {
+    checkValid(username, "username");
+    checkValid(password, "password");
+
     const u = await User.authenticate(username, password);
     WebSession.start(session, u._id);
     return { msg: "Logged in!" };
@@ -57,85 +56,257 @@ class Routes {
     return { msg: "Logged out!" };
   }
 
-  @Router.get("/posts")
-  async getPosts(author?: string) {
-    let posts;
+  //COMMENT
+
+  @Router.get("/comments/toArticle")
+  async getCommentsToArticle(author?: string, targetId?: string) {
+    const authorId = author ? (await User.getUserByUsername(author))._id : undefined;
+    if (targetId) {
+      await Article.exists(new ObjectId(targetId));
+    }
+    const comments = await CommentToArticle.getCommentsByAuthorAndTarget(authorId, targetId ? new ObjectId(targetId) : undefined);
+    return Responses.populateAuthors(comments);
+  }
+  @Router.get("/comments/toComment")
+  async getCommentsToComment(author?: string, targetId?: string) {
+    const authorId = author ? (await User.getUserByUsername(author))._id : undefined;
+    if (targetId) {
+      try {
+        await CommentToArticle.exists(new ObjectId(targetId));
+      } catch {
+        await CommentToComment.exists(new ObjectId(targetId));
+      }
+    }
+    const comments = await CommentToComment.getCommentsByAuthorAndTarget(authorId, targetId ? new ObjectId(targetId) : undefined);
+    return Responses.populateAuthors(comments);
+  }
+
+  @Router.post("/comments/toArticle")
+  async createCommentToArticle(session: WebSessionDoc, content: string, targetId: string) {
+    checkValid(content, "content");
+    checkValid(targetId, "targetId");
+
+    const user = WebSession.getUser(session);
+    const target = new ObjectId(targetId);
+    await Article.exists(target);
+    await checkArticleAccess(user, target);
+
+    const created = await CommentToArticle.create(target, user, content);
+    return { msg: created.msg, comment: await Responses.populateAuthor(created.comment) };
+  }
+
+  @Router.post("/comments/toComment")
+  async createCommentToComment(session: WebSessionDoc, content: string, targetId: string) {
+    checkValid(content, "content");
+    checkValid(targetId, "targetId");
+
+    const user = WebSession.getUser(session);
+    try {
+      await CommentToArticle.exists(new ObjectId(targetId));
+    } catch {
+      await CommentToComment.exists(new ObjectId(targetId));
+    }
+
+    const created = await CommentToComment.create(new ObjectId(targetId), user, content);
+    return { msg: created.msg, comment: await Responses.populateAuthor(created.comment) };
+  }
+
+  //BIO
+
+  @Router.post("/bios")
+  async createBio(session: WebSessionDoc, content: string) {
+    checkValid(content, "content");
+
+    const user = WebSession.getUser(session);
+    const created = await Bio.create(user, content);
+    return { msg: created.msg, bio: await Responses.populateUser(created.bio) };
+  }
+
+  @Router.get("/bios")
+  async getBio(user?: string) {
+    if (user) {
+      const id = (await User.getUserByUsername(user))._id;
+      return Responses.populateUser(await Bio.getByUser(id));
+    } else {
+      return Responses.populateUsers(await Bio.getBios({}));
+    }
+  }
+
+  @Router.delete("/bios")
+  async deleteBio(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    await Bio.hasBio(user);
+    try {
+      await Validation.removeValidation(user);
+    } catch (e) {
+      if (!(e instanceof ValidationNotFoundError)) {
+        throw e;
+      }
+    }
+    return Bio.deleteBio(user);
+  }
+
+  //SUBSCRIPTION
+  @Router.post("/subscribe")
+  async subscribe(session: WebSessionDoc, creator: string) {
+    checkValid(creator, "creator");
+
+    const user = WebSession.getUser(session);
+    const creatorId = (await User.getUserByUsername(creator))._id;
+    return Subscripton.subscribe(creatorId, user);
+  }
+  @Router.post("/unsubscribe")
+  async unsubscribe(session: WebSessionDoc, creator: string) {
+    checkValid(creator, "creator");
+
+    const user = WebSession.getUser(session);
+    const creatorId = (await User.getUserByUsername(creator))._id;
+    return Subscripton.unsubscribe(creatorId, user);
+  }
+
+  @Router.get("/subscriptions")
+  async getSubscriptions(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const subscriptions = await Subscripton.getSubscriptions(user);
+    return Responses.populateCreators(await Responses.populateSubscribers(subscriptions));
+  }
+  @Router.get("/subscribers")
+  async getSubscribers(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const subscribers = await Subscripton.getSubscribers(user);
+    return Responses.populateCreators(await Responses.populateSubscribers(subscribers));
+  }
+
+  @Router.post("/makePaid")
+  async makePaid(session: WebSessionDoc, articleId: string) {
+    checkValid(articleId, "articleId");
+
+    const user = WebSession.getUser(session);
+    await Article.isAuthor(user, new ObjectId(articleId));
+    return Subscripton.makePaid(new ObjectId(articleId));
+  }
+  @Router.post("/makeFree")
+  async makeFree(session: WebSessionDoc, articleId: string) {
+    checkValid(articleId, "articleId");
+
+    const user = WebSession.getUser(session);
+    await Article.isAuthor(user, new ObjectId(articleId));
+    return Subscripton.makeFree(new ObjectId(articleId));
+  }
+
+  @Router.get("/isSubscribed")
+  async isSubscribed(session: WebSessionDoc, creator: string){
+    const user = WebSession.getUser(session);
+    const creatorId = (await User.getUserByUsername(creator))._id;
+    try{
+      await Subscripton.checkSubscribed(creatorId, user);
+      return true;
+    } catch{
+      return false;
+    }
+  }
+
+  //ARTICLE
+  @Router.get("/articles/noContent")
+  async getArticlesNoContent(author?: string) {
+    let articles;
     if (author) {
       const id = (await User.getUserByUsername(author))._id;
-      posts = await Post.getByAuthor(id);
+      articles = await Article.getByAuthor(id);
     } else {
-      posts = await Post.getPosts({});
+      articles = await Article.getArticles({});
     }
-    return Responses.posts(posts);
+    return Responses.hideContents(await Responses.populateAuthors(articles));
   }
 
-  @Router.post("/posts")
-  async createPost(session: WebSessionDoc, content: string, options?: PostOptions) {
+  @Router.get("/articles/withContent")
+  async getArticleWithContent(session: WebSessionDoc, articleId: string) {
+    checkValid(articleId, "articleId");
+
     const user = WebSession.getUser(session);
-    const created = await Post.create(user, content, options);
-    return { msg: created.msg, post: await Responses.post(created.post) };
+    await checkArticleAccess(user, new ObjectId(articleId));
+
+    const article = await Article.getArticlebyId(new ObjectId(articleId));
+    return await Responses.populateAuthor(article);
   }
 
-  @Router.patch("/posts/:_id")
-  async updatePost(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
+  @Router.post("/articles")
+  async createArticle(session: WebSessionDoc, title: string, content: string) {
+    checkValid(title, "title");
+    checkValid(content, "content");
+
     const user = WebSession.getUser(session);
-    await Post.isAuthor(user, _id);
-    return await Post.update(_id, update);
+    await Validation.getValidation(user);
+    const created = await Article.create(user, title, content);
+    return { msg: created.msg, article: await Responses.populateAuthor(created.article) };
   }
 
-  @Router.delete("/posts/:_id")
-  async deletePost(session: WebSessionDoc, _id: ObjectId) {
-    const user = WebSession.getUser(session);
-    await Post.isAuthor(user, _id);
-    return Post.delete(_id);
+  // Validation
+
+  @Router.get("/validation")
+  async getValidation(user?: string) {
+    if (user) {
+      const id = (await User.getUserByUsername(user))._id;
+      return Responses.populateUser(await Validation.getValidation(id));
+    } else {
+      return Responses.populateUsers(await Validation.getAllValidations());
+    }
   }
 
-  @Router.get("/friends")
-  async getFriends(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    return await User.idsToUsernames(await Friend.getFriends(user));
-  }
-
-  @Router.delete("/friends/:friend")
-  async removeFriend(session: WebSessionDoc, friend: string) {
-    const user = WebSession.getUser(session);
-    const friendId = (await User.getUserByUsername(friend))._id;
-    return await Friend.removeFriend(user, friendId);
-  }
-
-  @Router.get("/friend/requests")
+  @Router.get("/validation/request")
   async getRequests(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    return await Responses.friendRequests(await Friend.getRequests(user));
+    await User.checkAdminAccess(user);
+    return Responses.populateUsers(await Validation.getAllRequests());
   }
 
-  @Router.post("/friend/requests/:to")
-  async sendFriendRequest(session: WebSessionDoc, to: string) {
+  @Router.post("/validation/request")
+  async requestValidation(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    const toId = (await User.getUserByUsername(to))._id;
-    return await Friend.sendRequest(user, toId);
+    return Validation.addRequest(user);
   }
 
-  @Router.delete("/friend/requests/:to")
-  async removeFriendRequest(session: WebSessionDoc, to: string) {
+  @Router.post("/validation/approve")
+  async approveValidation(session: WebSessionDoc, requestUser: string) {
+    checkValid(requestUser, "requestUser");
+
     const user = WebSession.getUser(session);
-    const toId = (await User.getUserByUsername(to))._id;
-    return await Friend.removeRequest(user, toId);
+    await User.checkAdminAccess(user);
+    const requestUserId = (await User.getUserByUsername(requestUser))._id;
+    await Bio.hasBio(requestUserId);
+    return Validation.approveRequest(requestUserId);
   }
 
-  @Router.put("/friend/accept/:from")
-  async acceptFriendRequest(session: WebSessionDoc, from: string) {
-    const user = WebSession.getUser(session);
-    const fromId = (await User.getUserByUsername(from))._id;
-    return await Friend.acceptRequest(fromId, user);
-  }
+  @Router.post("/validation/reject")
+  async rejectValidation(session: WebSessionDoc, requestUser: string) {
+    checkValid(requestUser, "requestUser");
 
-  @Router.put("/friend/reject/:from")
-  async rejectFriendRequest(session: WebSessionDoc, from: string) {
     const user = WebSession.getUser(session);
-    const fromId = (await User.getUserByUsername(from))._id;
-    return await Friend.rejectRequest(fromId, user);
+    await User.checkAdminAccess(user);
+    const requestUserId = (await User.getUserByUsername(requestUser))._id;
+    return Validation.rejectRequest(requestUserId);
   }
 }
 
+async function checkArticleAccess(user: ObjectId, articleId: ObjectId) {
+  const article = await Article.getArticlebyId(articleId);
+
+  try {
+    await Subscripton.checkContentIsNotPaid(article._id);
+    return;
+  } catch {
+    if (article.author === user) {
+      return;
+    } else {
+      await Subscripton.checkSubscribed(article.author, user);
+      return;
+    }
+  }
+}
+//eslint-disable-next-line
+function checkValid(val: any, name: string) {
+  if (typeof val !== "string") {
+    throw new BadValuesError(`Need a valid string value for field ${name}`);
+  }
+}
 export default getExpressRouter(new Routes());

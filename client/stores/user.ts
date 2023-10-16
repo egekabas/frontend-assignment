@@ -1,13 +1,12 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import { BodyT, fetchy } from "@/utils/fetchy";
+import { fetchy } from "@/utils/fetchy";
 
 export const useUserStore = defineStore(
   "user",
   () => {
     const currentUsername = ref("");
-
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
     const resetStore = () => {
@@ -40,10 +39,6 @@ export const useUserStore = defineStore(
       resetStore();
     };
 
-    const updateUser = async (patch: BodyT) => {
-      await fetchy("api/users", "PATCH", { body: { update: patch } });
-    };
-
     const deleteUser = async () => {
       await fetchy("api/users", "DELETE");
       resetStore();
@@ -56,7 +51,6 @@ export const useUserStore = defineStore(
       loginUser,
       updateSession,
       logoutUser,
-      updateUser,
       deleteUser,
     };
   },
