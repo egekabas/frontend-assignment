@@ -8,11 +8,7 @@ const props = defineProps(["articleId"]);
 const articleId = ref(props.articleId);
 
 const loading = ref(true);
-
-// eslint-disable-next-line
-const articleError: any = ref(false);
-// eslint-disable-next-line
-const commentsError: any = ref(false);
+const notSubscribed = ref(false);
 
 const articleTitle = ref("");
 const articleContent = ref("");
@@ -28,7 +24,6 @@ async function loadComments() {
   try {
     res = await fetchy("api/comments/toArticle", "GET", { query });
   } catch (e) {
-    commentsError.value = e;
     return;
   }
   comments.value = res;
@@ -40,7 +35,9 @@ async function loadArticle() {
   try {
     res = await fetchy("api/articles/withContent", "GET", { query });
   } catch (e) {
-    articleError.value = e;
+    if (e == "Error: Error: User user is not subscribed to creator root!") {
+      notSubscribed.value = true;
+    }
     return;
   }
 
@@ -51,15 +48,17 @@ async function loadArticle() {
 }
 
 onBeforeMount(async () => {
-  await Promise.all([loadComments(), loadArticle()]);
-
+  await loadArticle();
+  if (!notSubscribed.value) {
+    await loadComments();
+  }
   loading.value = false;
 });
 </script>
 
 <template>
   <div v-if="loading">Article Loading</div>
-  <div v-else-if="articleError">{{ articleError }}</div>
+  <div v-else-if="notSubscribed">This content is paid, subscribe to have access</div>
   <div v-else>
     <h1>{{ articleTitle }}</h1>
     <p>{{ articleContent }}</p>

@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user";
 import ArticleView from "../views/ArticleView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import ManageArticlesView from "../views/ManageArticlesView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
 import UserView from "../views/UserView.vue";
@@ -48,6 +49,12 @@ const router = createRouter({
       component: UserView,
       props: (route) => ({ username: route.query.username }),
       meta: { requiresAuth: false },
+    },
+    {
+      path: "/manageArticles",
+      name: "Manage Articles",
+      component: ManageArticlesView,
+      meta: { requiresAuth: true },
     },
     {
       path: "/:catchAll(.*)",

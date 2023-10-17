@@ -147,6 +147,9 @@ class Routes {
   }
 
   //SUBSCRIPTION
+
+  
+
   @Router.post("/subscribe")
   async subscribe(session: WebSessionDoc, creator: string) {
     checkValid(creator, "creator");
@@ -207,6 +210,18 @@ class Routes {
   }
 
   //ARTICLE
+  
+  @Router.get("/articles/isPaid")
+  async isPaid(article: string){
+    checkValid(article, "article");
+    try{
+      await Subscripton.checkContentIsNotPaid(new ObjectId(article));
+      return false;
+    } catch{
+      return true;
+    }
+  }
+
   @Router.get("/articles/noContent")
   async getArticlesNoContent(author?: string) {
     let articles;
@@ -295,7 +310,7 @@ async function checkArticleAccess(user: ObjectId, articleId: ObjectId) {
     await Subscripton.checkContentIsNotPaid(article._id);
     return;
   } catch {
-    if (article.author === user) {
+    if (article.author.equals(user)) {
       return;
     } else {
       await Subscripton.checkSubscribed(article.author, user);
