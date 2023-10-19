@@ -37,23 +37,24 @@ const emptyForm = () => {
 <style scoped>
 form {
   background-color: var(--base-bg);
-  border-radius: 1em;
+  /* border-radius: 1em; */
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
-  padding: 1em;
-}
-textarea.title {
-  font-size: large;
-  height: 2em;
+  /* gap: 0.5em; */
+  /* padding: 1em; */
+  textarea.title {
+    font-size: large;
+    /* height: 2em; */
+  }
+  width: 50%;
 }
 
 textarea {
   font-family: inherit;
   font-size: inherit;
-  height: 3em;
+  /* height: 3em;
   padding: 0.5em;
-  border-radius: 4px;
+  border-radius: 4px; */
   resize: none;
 }
 </style>

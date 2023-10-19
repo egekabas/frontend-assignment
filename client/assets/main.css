@@ -1,5 +1,9 @@
 /* Add some global styles here! */
 
+main{
+  font-size: 25px;
+}
+
 :root {
   --red: rgb(208, 67, 12);
   --base-bg: #f1f3f5;
@@ -23,10 +27,29 @@ a.button {
   text-decoration: none;
 }
 
+
 .column {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+button.linker {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+  font-size: x-large;
+  
+}
+
+.linker {
+  text-decoration: none;
+  color: black;
+  font-size: 40px;
 }

@@ -7,7 +7,8 @@ export const useUserStore = defineStore(
   "user",
   () => {
     const currentUsername = ref("");
-    const validation = ref({});
+    // eslint-disable-next-line
+    const validation = ref<false | { [key: string]: any }>(false);
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
     const resetStore = () => {
@@ -31,9 +32,12 @@ export const useUserStore = defineStore(
         const { username } = await fetchy("api/session", "GET", { alert: false });
         currentUsername.value = username;
         try {
-          validation.value = await fetchy("api/validation", "GET", { alert: false });
+          validation.value = await fetchy("api/validation", "GET", {
+            query: { user: currentUsername.value },
+            alert: false,
+          });
         } catch {
-          validation.value = {};
+          validation.value = false;
         }
       } catch {
         currentUsername.value = "";

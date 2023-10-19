@@ -223,7 +223,11 @@ class Routes {
   }
 
   @Router.get("/articles/noContent")
-  async getArticlesNoContent(author?: string) {
+  async getArticlesNoContent(author?: string, articleId?: string) {
+    if(articleId){
+      const article = await Article.getArticlebyId(new ObjectId(articleId));
+      return Responses.hideContent(await Responses.populateAuthor(article));
+    }
     let articles;
     if (author) {
       const id = (await User.getUserByUsername(author))._id;

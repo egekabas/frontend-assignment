@@ -1,22 +1,15 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import ArticleManager from "../components/Article/ArticleManager.vue";
+import CreateArticleForm from "../components/Article/CreateArticleForm.vue";
 import { fetchy } from "../utils/fetchy";
 
 const { currentUsername, validation } = storeToRefs(useUserStore());
 
 //eslint-disable-next-line
 const articles = ref(Array<any>());
-
-const isValidated = computed(() => {
-  if (Object.keys(validation.value).length > 0) {
-    return true;
-  } else {
-    return false;
-  }
-});
 
 async function loadArticles() {
   let res;
@@ -31,7 +24,7 @@ async function loadArticles() {
 }
 
 onMounted(async () => {
-  if (isValidated.value) {
+  if (validation.value) {
     await loadArticles();
   }
 });
@@ -39,13 +32,20 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div v-if="!isValidated">Only validated users have access to this page</div>
-    <div v-else>
+    <div v-if="articles.length">
       <h1>{{ currentUsername }}'s articles</h1>
       <li v-for="article in articles" :key="article._id">
         <ArticleManager :article="article" />
       </li>
     </div>
+    <div v-else>
+      <h1>You have no articles yet</h1>
+    </div>
+
+    <div v-if="validation">
+      <CreateArticleForm @refresh-posts="loadArticles" />
+    </div>
+    <div v-else><h2>Get validated to post articles!</h2></div>
   </main>
 </template>
 

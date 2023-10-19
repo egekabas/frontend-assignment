@@ -8,7 +8,7 @@ const emit = defineEmits(["refreshPosts"]);
 
 const createArticle = async (title: string, content: string) => {
   try {
-    await fetchy("api/posts", "POST", {
+    await fetchy("api/articles", "POST", {
       body: { title, content },
     });
   } catch (_) {

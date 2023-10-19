@@ -6,8 +6,8 @@ import ArticleView from "../views/ArticleView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import ManageArticlesView from "../views/ManageArticlesView.vue";
+import ManageProfile from "../views/ManageProfile.vue";
 import NotFoundView from "../views/NotFoundView.vue";
-import SettingView from "../views/SettingView.vue";
 import UserView from "../views/UserView.vue";
 
 const router = createRouter({
@@ -19,9 +19,9 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: "/setting",
-      name: "Settings",
-      component: SettingView,
+      path: "/manageProfile",
+      name: "Manage User",
+      component: ManageProfile,
       meta: { requiresAuth: true },
     },
     {
