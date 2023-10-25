@@ -28,8 +28,29 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>{{ accessMessage }}</div>
-  <router-link :to="articleLink">{{ article.title }}</router-link>
+  <div class = "container">
+    <router-link :to="articleLink" class = "article-link">{{ article.title }}</router-link>
+    <div>{{ accessMessage }}</div>
+  </div>
 </template>
 
-<style scoped></style>
+
+
+<style scoped>
+
+.container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: end;
+  padding-left: 30%;
+  padding-right: 30%;
+  margin-top: 0.5em;
+}
+
+.article-link{
+  font-size: 1.3em;
+  text-align: left;
+}
+
+</style>

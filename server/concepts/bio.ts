@@ -11,6 +11,10 @@ export interface BioDoc extends BaseDoc {
 export default class BioConcept {
   public readonly bios = new DocCollection<BioDoc>("bios");
 
+  async deleteVBiosByUser(user: ObjectId) {
+    await this.bios.deleteMany({ user });
+  }
+
   async create(user: ObjectId, content: string) {
     await this.hasNoBio(user);
     const _id = await this.bios.createOne({ user, content });

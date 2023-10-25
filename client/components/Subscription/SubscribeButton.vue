@@ -60,12 +60,34 @@ onBeforeMount(async () => {
   <div v-if="!isLoggedIn">Log in to subscribe</div>
   <div v-else-if="!loading && currentUsername !== creator">
     <div v-if="isSubscribed">
-      <button class="btn btn-primary" @click="unsubscribe">Unsubscribe</button>
+      <button @click="unsubscribe" class = "default unsubscribe">Unsubscribe from user<br>(you will lose access to paid articles)</button>
     </div>
     <div v-else>
-      <button class="btn btn-primary" @click="subscribe">Subscribe</button>
+      <button @click="subscribe" class = "default subscribe">Subscribe to user <br>to have access to paid articles</button>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+button.subscribe{
+  background-color:var(--bright);
+}
+button.unsubscribe{
+  background-color: red;
+}
+
+
+
+button:hover {
+	background:linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
+	background-color:#408c99;
+}
+
+button:active {
+	position:relative;
+	top:1px;
+}
+
+
+</style>

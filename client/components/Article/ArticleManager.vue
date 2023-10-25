@@ -68,17 +68,56 @@ onMounted(async () => {
 
 <template>
   <main>
-    <router-link :to="articleLink">{{ article.title }}</router-link>
-    <div>Amount of comments {{ comments }}</div>
-    <div v-if="!loading">
-      <div v-if="isPaid">
-        <button class="btn btn-primary" @click="makeFree">Make Free</button>
-      </div>
-      <div v-else>
-        <button class="btn btn-primary" @click="makePaid">Make Paid</button>
-      </div>
+
+    <div>
+      <router-link :to="articleLink">{{ article.title }}</router-link>
+      <div style="text-size: 0.8em;"> Comments: {{ comments }} </div>
     </div>
+
+    <button v-if="isPaid" class="btn btn-primary" @click="makeFree">Make Free</button>
+
+    <button v-else class="btn btn-primary" @click="makePaid">Make Paid</button>
+
+
+
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+
+.info{
+  font-size: 0.9em;
+  padding-top: 0px;
+  text-align: center;
+}
+
+button{
+  background-color: white;
+  height: 2.4em;
+  width: 4em;
+  font-size: 1.2em;
+}
+
+main{
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  
+  margin-left: 20%; padding-left: 3%;
+  margin-right: 20%;padding-right: 3%;
+  
+  padding-top: 1em;
+  padding-bottom: 1em;
+  
+  border: solid 1px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+
+  background-color: --var(blue);
+}
+
+*{
+  font-size: 1.1em;
+}
+</style>

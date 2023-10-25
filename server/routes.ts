@@ -37,6 +37,11 @@ class Routes {
   async deleteUser(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
     WebSession.end(session);
+
+    await Bio.deleteVBiosByUser(user);
+    await Subscripton.deleteByUser(user);
+    await Validation.deleteByUser(user);
+    
     return await User.delete(user);
   }
 
@@ -61,12 +66,14 @@ class Routes {
   @Router.get("/comments/toArticle")
   async getCommentsToArticle(author?: string, targetId?: string) {
     const authorId = author ? (await User.getUserByUsername(author))._id : undefined;
+    
     if (targetId) {
       await Article.exists(new ObjectId(targetId));
     }
     const comments = await CommentToArticle.getCommentsByAuthorAndTarget(authorId, targetId ? new ObjectId(targetId) : undefined);
     return Responses.populateAuthors(comments);
   }
+
   @Router.get("/comments/toComment")
   async getCommentsToComment(author?: string, targetId?: string) {
     const authorId = author ? (await User.getUserByUsername(author))._id : undefined;
@@ -140,6 +147,13 @@ class Routes {
       await Validation.removeValidation(user);
     } catch (e) {
       if (!(e instanceof ValidationNotFoundError)) {
+        throw e;
+      }
+    }
+    try{
+      await Validation.removeRequest(user);
+    } catch(e){
+      if(!(e instanceof ValidationNotFoundError)){
         throw e;
       }
     }
@@ -270,6 +284,12 @@ class Routes {
     } else {
       return Responses.populateUsers(await Validation.getAllValidations());
     }
+  }
+
+  @Router.get("/validation/ownRequest")
+  async ownRequest(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    return Validation.getRequest(user);
   }
 
   @Router.get("/validation/request")

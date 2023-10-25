@@ -5,15 +5,22 @@ import { onBeforeMount, ref } from "vue";
 import { useToastStore } from "../stores/toast";
 import { fetchy } from "../utils/fetchy";
 import { formatDate } from "../utils/formatDate";
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
+
+
+
+const {currentUsername} = storeToRefs(useUserStore());
 
 const props = defineProps(["username"]);
 const username = ref(props.username);
+
 
 const loading = ref(true);
 //es-lint-disable-next-line
 const articles = ref(Array<any>());
 
-const userValidation = ref<false | { [key: string]: any }>(false);
+const userValidation = ref<false | any>(false);
 
 async function loadValidation() {
   let res;
@@ -22,7 +29,7 @@ async function loadValidation() {
     res = await fetchy("api/validation", "GET", { query, alert: false });
     userValidation.value = res;
   } catch (e) {
-    if (e == "Error: Validation for user does not exist!") {
+    if (e == `Error: Validation for ${username.value} does not exist!`) {
       userValidation.value = false;
       return;
     } else {
@@ -62,64 +69,78 @@ async function loadArticles() {
 onBeforeMount(async () => {
   await Promise.all([loadArticles(), loadBio(), loadValidation()]);
   loading.value = false;
+
 });
 </script>
 
 <template>
-  <div v-if="loading" style="font-size: xx-large">Loading</div>
 
-  <main v-else class="container">
+  <div v-if="loading" style="font-size: 3em; text-align: center;">Loading</div>
+
+  <main v-else>
+
     <div class="user-info">
-      <div>
-        <h1>{{ username }}</h1>
-        <div v-if="userValidation">
-          <div>Validated Reporter since {{ formatDate(userValidation.dateCreated) }}</div>
-        </div>
+      <h1>{{ username }} <div v-if="username==currentUsername">(this is you!)</div></h1>
+      <div v-if="userValidation">
+        <div>Validated Reporter since {{ formatDate(userValidation.dateCreated) }}</div>
       </div>
-      <div>Other info</div>
     </div>
 
-    <div class="bio-subscribe">
-      <div>
-        <h2>Bio</h2>
-        <p>
-          {{ bio.length ? bio : "This user does not have a bio yet :(" }}
-        </p>
-      </div>
-      <SubscribeButton :creator="username" />
+    <div class="bio">
+      <h2>Bio</h2>
+      <p>
+        {{ bio.length ? bio : "This user does not have a bio yet :(" }}
+      </p>
     </div>
 
+    
     <div v-if="articles.length">
       <h2>Articles</h2>
-      <li v-for="article in articles" :key="article._id"><ArticleShallowDisplay :article="article" /></li>
+
+
+      <SubscribeButton :creator="username" />
+      
+      <li v-for="article in articles" :key="article._id" class = articles>
+        <ArticleShallowDisplay :article="article" />
+      </li>
     </div>
-    <div v-else>This user doesnt have any articles (yet?)</div>
+    <h2 v-else>This user doesnt have any articles (yet?)</h2>
   </main>
 </template>
 
 <style scoped>
 @import "@/assets/main.css";
 
+.bio{
+  background-color: var(--turqoise);
+}
+.articles {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+  gap: 3em;
+}
 .user-info {
   display: flex;
   justify-content: space-between;
-  padding-right: 20%;
+  align-items: center;
+  flex-direction: column;
   padding-bottom: 2em;
 }
 
-h1,
-h2 {
-  font-size: 40px;
-}
-
-.bio-subscribe {
+main{
   display: flex;
-  justify-content: space-between;
-  padding-right: 20%;
-  padding-bottom: 4em;
+  flex-direction: column;
+  justify-content: space-around;
+  padding-bottom: 5%;
+  background-color: var(--blue);
 }
 
 * {
-  font-size: 30px;
+  text-align: center;
+}
+
+main {
+  font-size: 1.7em;
 }
 </style>

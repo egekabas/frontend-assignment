@@ -17,28 +17,63 @@ async function logout() {
 
 <template>
   <main>
-    <b-dropdown text="dropdown">
+    <!-- <b-dropdown text="dropdown">
       <b-dropdown-item>First Action</b-dropdown-item>
       <b-dropdown-item>Second Action</b-dropdown-item>
       <b-dropdown-item>Third Action</b-dropdown-item>
-    </b-dropdown>
+    </b-dropdown> -->
 
-    <!-- <div style="overflow: hidden">
-      <button @click="toggle">Settings</button>
+    <div style="overflow: hidden">
+      <button @click="toggle" class = "pure" :style="{fontWeight: isExtended ? 'bold' : 'normal'}">Settings</button>
+
       <div v-if="isExtended" class="expander">
-        <RouterLink to="/manageProfile">Manage Profile</RouterLink> <br />
-        <RouterLink to="/manageArticles">Manage Articles</RouterLink> <br />
-        <button @click="logout" class="linker">Logout</button> <br />
+        <RouterLink to="/manageProfile" class="basic-text">Manage Profile</RouterLink>
+        <RouterLink to="/manageArticles" class="basic-text">Manage Articles</RouterLink> 
+        <button @click="logout" class = "pure right">Logout</button>
       </div>
-    </div> -->
+    </div>
   </main>
 </template>
 
 <style scoped>
 @import "@/assets/main.css";
 
+
+*{
+  background-color: var(--green);
+  text-decoration: underline;
+}
 .expander {
   position: absolute;
   text-align: right;
+  right: 0;
+  margin-top: .5em;
+  padding-right: 2.4em;
+  padding-left: 2em;
+  height: 7em;
+  width: 4em;
+  display: flex;
+  flex-direction: column;
+  align-items: right;
+  justify-content: space-evenly;
+}
+
+button.right{
+  text-align: end;
+  justify-content: end;
+}
+
+button.pure{
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+.basic-text{
+  color: black;
+  text-decoration: none;
 }
 </style>

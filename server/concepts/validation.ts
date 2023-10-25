@@ -18,6 +18,20 @@ export default class ValidationConcept {
     return this.requests.readMany({});
   }
 
+  async deleteByUser(user: ObjectId) {
+    await this.requests.deleteMany({ user });
+    await this.validations.deleteMany({ user });
+  }
+
+  async getRequest(user: ObjectId) {
+    const request = await this.requests.readOne({ user });
+    if(request === null) {
+      throw new ValidationRequestNotFoundError(user);
+    } else{
+      return request;
+    }
+  }
+
   async addRequest(user: ObjectId) {
     await this.canAddRequest(user);
     await this.requests.createOne({ user });

@@ -5,3 +5,4 @@
     <RouterLink to="/" class="button"> Return to the home page </RouterLink>
   </main>
 </template>
+

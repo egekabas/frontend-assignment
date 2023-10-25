@@ -32,21 +32,48 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div v-if="articles.length">
-      <h1>{{ currentUsername }}'s articles</h1>
-      <li v-for="article in articles" :key="article._id">
+
+    <div v-if="articles.length" class = "article-container">
+      <h1 style="text-align: center;">{{ currentUsername }}'s articles</h1>
+      
+      <li v-for="article in articles" :key="article._id" class = "article-list">
         <ArticleManager :article="article" />
       </li>
     </div>
+
     <div v-else>
       <h1>You have no articles yet</h1>
     </div>
 
-    <div v-if="validation">
-      <CreateArticleForm @refresh-posts="loadArticles" />
+
+    <div style="background-color: var(--turqoise);">
+      <div v-if="validation">
+        <CreateArticleForm @refresh-posts="loadArticles" />
+      </div>
+
+      <div v-else>
+        <h2>Get reporter validation from the <RouterLink to="/manageProfile">Manage Profile</RouterLink>
+            page to post articles!</h2>
+      </div>
     </div>
-    <div v-else><h2>Get validated to post articles!</h2></div>
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+.article-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.article-list{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+main{
+  background-color: var(--blue);
+}
+</style>

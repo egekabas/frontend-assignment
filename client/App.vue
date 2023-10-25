@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount } from "vue";
 import { RouterLink, useRoute } from "vue-router";
+import GlobalStyling from "./GlobalStyling.vue"
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
@@ -23,106 +24,86 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <GlobalStyling/>
   <div class="container">
-    <div class="Top">
+    <div>
       <nav>
-        <div class="title">
-          <img src="@/assets/images/logo.svg" />
-          <RouterLink :to="{ name: 'Home' }">
-            <h1>ReporTTer</h1>
+
+        <div class = "top-group">
+          <RouterLink :to="{ name: 'Home' }" style="text-decoration: none;">
+            <h1 class = "app-name">Reportter</h1>
           </RouterLink>
         </div>
-        <ul>
-          <li>
-            <RouterLink :to="{ name: 'Home' }" class="menu_click"> Home </RouterLink>
-          </li>
-          <li v-if="isLoggedIn"><DropdownSetting class="menu_click" /></li>
-          <li v-else>
-            <RouterLink :to="{ name: 'Login' }" class="menu_click"> Login </RouterLink>
-          </li>
-        </ul>
+
+        <div class = "top-group">
+          <RouterLink :to="{ name: 'Home' }" class="menu-item"> Home </RouterLink>
+          <div v-if="isLoggedIn"><DropdownSetting class="menu-item"/></div>
+          <div v-else> <RouterLink :to="{ name: 'Login' }" class="menu-item"> Login </RouterLink> </div>
+        </div>
+
       </nav>
+
       <article v-if="toast !== null" class="toast" :class="toast.style">
         <p>{{ toast.message }}</p>
       </article>
+
     </div>
 
     <div class="Mid">
       <RouterView class="view" />
     </div>
 
-    <div class="Left" style="background-color: lightgray"></div>
-    <div class="Right" style="background-color: lightgray"></div>
-    <div class="Bottom" style="background-color: lightgray"></div>
   </div>
 </template>
 
 <style scoped>
 @import "./assets/toast.css";
-@import "./assets/main.css";
 
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-  gap: 0px 0px;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "Top Top Top Top Top Top Top Top Top"
-    "Left Mid Mid Mid Mid Mid Mid Mid Right"
-    "Left Mid Mid Mid Mid Mid Mid Mid Right"
-    "Left Mid Mid Mid Mid Mid Mid Mid Right"
-    "Bottom Bottom Bottom Bottom Bottom Bottom Bottom Bottom Bottom";
-  width: 100%;
-  height: 100%;
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+
+.app-name{
+  font-family: 'UnifrakturMaguntia', cursive;
+  text-decoration: none;
+  font-size: 5em;
 }
-
-.Top {
-  grid-area: Top;
-}
-
-.Bottom {
-  grid-area: Bottom;
-}
-
-.Left {
-  grid-area: Left;
-}
-
-.Right {
-  grid-area: Right;
-}
-
-.Mid {
-  grid-area: Mid;
-}
-
-td.col-column {
-  width: 60px;
-  background-color: lightgray;
-  height: 100%;
+.container{
+  background-color: var(--blue);
+  height: 100vh;
 }
 
 nav {
   padding: 1em 2em;
-  background-color: lightgray;
+  background-color: var(--green);
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  height: 4em;
+  text-decoration: underline;
 }
 
-h1 {
-  font-size: 2em;
-  margin: 0;
+.top-group{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  width: 15%;
+  margin-left: 5em;
+  margin-right: 5em;
 }
 
-.title {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
+.menu-item{
+  font-size: 2.5em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  
 }
 
 img {
-  height: 2em;
+  height: 3em;
+}
+
+h1 {
+  font-size: 3em;
 }
 
 a {
@@ -140,7 +121,4 @@ ul {
   gap: 1em;
 }
 
-.underline {
-  text-decoration: underline;
-}
 </style>

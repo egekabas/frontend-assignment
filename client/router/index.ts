@@ -9,6 +9,7 @@ import ManageArticlesView from "../views/ManageArticlesView.vue";
 import ManageProfile from "../views/ManageProfile.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import UserView from "../views/UserView.vue";
+import ListUsersViews from "../views/ListUsersView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -48,6 +49,12 @@ const router = createRouter({
       name: "User",
       component: UserView,
       props: (route) => ({ username: route.query.username }),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/users",
+      name: "Users",
+      component: ListUsersViews,
       meta: { requiresAuth: false },
     },
     {

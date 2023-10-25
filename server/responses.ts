@@ -18,8 +18,12 @@ export default class Responses {
     if (!post) {
       return post;
     }
-    const author = await User.getUserById(post.author);
-    return { ...post, author: author.username };
+    try{
+      const author = await User.getUserById(post.author);
+      return { ...post, author: author.username };
+    } catch{
+      return { ...post, author: "Deleted User" };
+    }
   }
   static async populateAuthors<T extends { author: ObjectId }>(posts: T[]) {
     return Promise.all(posts.map((post) => Responses.populateAuthor(post)));
@@ -32,9 +36,14 @@ export default class Responses {
     if (!post) {
       return post;
     }
-    const subscriber = await User.getUserById(post.subscriber);
-    return { ...post, subscriber: subscriber.username };
+    try{
+      const subscriber = await User.getUserById(post.subscriber);
+      return { ...post, subscriber: subscriber.username };
+    } catch{
+      return { ...post, subscriber: "Deleted User" };
+    }
   }
+
   static async populateSubscribers<T extends { subscriber: ObjectId }>(posts: T[]) {
     return Promise.all(posts.map((post) => Responses.populateSubscriber(post)));
   }
@@ -46,8 +55,12 @@ export default class Responses {
     if (!post) {
       return post;
     }
-    const creator = await User.getUserById(post.creator);
-    return { ...post, creator: creator.username };
+    try{
+      const creator = await User.getUserById(post.creator);
+      return { ...post, creator: creator.username };
+    } catch{
+      return { ...post, creator: "Deleted User" };
+    }
   }
   static async populateCreators<T extends { creator: ObjectId }>(posts: T[]) {
     return Promise.all(posts.map((post) => Responses.populateCreator(post)));
@@ -60,8 +73,12 @@ export default class Responses {
     if (!post) {
       return post;
     }
-    const user = await User.getUserById(post.user);
-    return { ...post, user: user.username };
+    try{
+      const user = await User.getUserById(post.user);
+      return { ...post, user: user.username };
+    } catch{
+      return { ...post, user: "Deleted User" };
+    }
   }
   static async populateUsers<T extends { user: ObjectId }>(posts: T[]) {
     return Promise.all(posts.map((post) => Responses.populateUser(post)));

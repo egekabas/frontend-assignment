@@ -15,6 +15,12 @@ export default class SubscriptonConcept {
   public readonly subscribers = new DocCollection<SubscriberDoc>("subscribers");
   public readonly paidContent = new DocCollection<PaidContentDoc>("paidContent");
 
+
+  async deleteByUser(user: ObjectId) {
+    await this.subscribers.deleteMany({ creator: user });
+    await this.subscribers.deleteMany({ subscriber: user });
+  }
+
   async getSubscriptions(user: ObjectId) {
     return this.subscribers.readMany({ subscriber: user });
   }
