@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
-import CreateCommentForm from "./CreateCommentForm.vue";
 import LinkToUser from "../User/LinkToUser.vue";
+import CreateCommentForm from "./CreateCommentForm.vue";
 
 const props = defineProps(["comment", "index"]);
 
@@ -20,18 +20,17 @@ const targetId = computed(() => {
   return curComment.value._id;
 });
 
-
 const colorStyle = computed(() => {
-  return index.value%2 == 0 ? "color0": "color1";
-})
+  return index.value % 2 == 0 ? "color0" : "color1";
+});
 
 const commentColor = computed(() => {
-  return index.value%2 == 0 ? "color1": "color0";
-})
+  return index.value % 2 == 0 ? "color1" : "color0";
+});
 
 async function loadsubComments() {
   let res;
-  let query = {targetId: targetId.value };
+  let query = { targetId: targetId.value };
   try {
     res = await fetchy("api/comments/toComment", "GET", { query });
   } catch (e) {
@@ -57,73 +56,60 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class = "main-container" :class="colorStyle">
-    
-    <div class = "top-part">
-
-      <div class = "button-content">
-
-        <div class="button-wrapper">
-          <button v-if="prtComments.length" @click="goToParentComment" class = "parent">Go back to parent comment</button><br />
-        </div>
+  <div class="main-container" :class="colorStyle">
+    <div class="top-part">
+      <div class="button-content">
+        <div class="button-wrapper"><button v-if="prtComments.length" @click="goToParentComment" class="parent">Go back to parent comment</button><br /></div>
 
         <div>
-          <p>{{ curComment.content }} </p>
-          <p> by <LinkToUser :user="curComment.author"/></p>
+          <p>{{ curComment.content }}</p>
+          <p>by <LinkToUser :user="curComment.author" /></p>
         </div>
-
       </div>
 
-      <div  class = "center">
-        <CreateCommentForm :targetId="targetId" targetType="comment" @refreshComments="loadsubComments" :color="commentColor"/>
+      <div class="center">
+        <CreateCommentForm :targetId="targetId" targetType="comment" @refreshComments="loadsubComments" :color="commentColor" />
       </div>
-
     </div>
-    
-    <div>
 
+    <div>
       <div v-for="(comment, index) in subComments" :key="comment._id">
-        
-        <div class = "subcomment">
-        
+        <div class="subcomment">
           <div>
-            <p>{{ comment.content }} </p>
-            <p> by <LinkToUser :user="comment.author"/></p>
+            <p>{{ comment.content }}</p>
+            <p>by <LinkToUser :user="comment.author" /></p>
           </div>
 
-          <button @click="() => goToSubcomment(index)" class = "default">Go to <br> subcomment</button>
-        
+          <button @click="() => goToSubcomment(index)" class="default">
+            Go to <br />
+            subcomment
+          </button>
         </div>
-        
       </div>
-
     </div>
-
   </div>
 </template>
 
 <style scoped>
-
-.button-content{
+.button-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1em;
 }
 
-button.parent{
+button.parent {
   min-width: 5.1em;
   max-width: 5.1em;
   height: 4em;
   background-color: var(--bright);
 }
-button.parent:hover{
-	background:linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
-	background-color:#408c99;
-
+button.parent:hover {
+  background: linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
+  background-color: #408c99;
 }
 
-.button-wrapper{
+.button-wrapper {
   width: 10%;
   display: flex;
   flex-direction: column;
@@ -135,19 +121,19 @@ button.parent:hover{
   max-width: 5.1em;
   height: 4em;
 }
-.color0{
+.color0 {
   background-color: var(--turqoise);
 }
-.color1{
+.color1 {
   background-color: var(--blue);
 }
-.subcomment{
+.subcomment {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-left: 13%;
   margin-bottom: 0.5em;
-  
+
   padding: 1em;
 
   width: 40%;
@@ -158,18 +144,18 @@ button.parent:hover{
 
   border: 3px solid;
 }
-button.parent{
+button.parent {
   width: 30%;
   margin-top: 0.5em;
 }
 
-.center{
+.center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.top-part{
+.top-part {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -188,5 +174,4 @@ button.parent{
   display: flex;
   flex-direction: row;
 }
-
 </style>

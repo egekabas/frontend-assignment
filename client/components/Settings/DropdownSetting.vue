@@ -17,15 +17,14 @@ async function logout() {
 
 <template>
   <main>
-
     <div style="overflow: hidden">
-      <button @click="toggle" class = "pure" :style="{fontWeight: isExtended ? 'bold' : 'normal'}">Settings</button>
+      <button @click="toggle" class="pure" :style="{ fontWeight: isExtended ? 'bold' : 'normal' }">Settings</button>
 
       <div v-if="isExtended" class="expander">
         <RouterLink to="/manageProfile" class="basic-text">Manage Profile</RouterLink>
-        <RouterLink to="/manageArticles" class="basic-text">Manage Articles</RouterLink> 
-        <RouterLink to="/createArticle" class="basic-text">Create Article</RouterLink> 
-        <button @click="logout" class = "pure right">Logout</button>
+        <RouterLink to="/manageArticles" class="basic-text">Manage Articles</RouterLink>
+        <RouterLink to="/createArticle" class="basic-text">Create Article</RouterLink>
+        <button @click="logout" class="pure right">Logout</button>
       </div>
     </div>
   </main>
@@ -34,8 +33,7 @@ async function logout() {
 <style scoped>
 @import "@/assets/main.css";
 
-
-*{
+* {
   background-color: var(--green);
   text-decoration: underline;
 }
@@ -43,7 +41,7 @@ async function logout() {
   position: absolute;
   text-align: right;
   right: 0;
-  margin-top: .5em;
+  margin-top: 0.5em;
   padding-right: 2.4em;
   padding-left: 2em;
   height: 9em;
@@ -54,12 +52,12 @@ async function logout() {
   justify-content: space-evenly;
 }
 
-button.right{
+button.right {
   text-align: end;
   justify-content: end;
 }
 
-button.pure{
+button.pure {
   border: none;
   color: inherit;
   cursor: pointer;
@@ -68,7 +66,7 @@ button.pure{
   font-size: inherit;
 }
 
-.basic-text{
+.basic-text {
   color: black;
   text-decoration: none;
 }

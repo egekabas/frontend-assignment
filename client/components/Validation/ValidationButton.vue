@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
-import { ref } from "vue";
-import { storeToRefs } from "pinia";
-import { onBeforeMount } from "vue";
-
 
 const emit = defineEmits(["requestValidation"]);
 
@@ -16,18 +11,17 @@ async function requestValidation() {
 
 <template>
   <main>
-  <button class="btn btn-primary default" @click="requestValidation">Request Validation</button>
+    <button class="btn btn-primary default" @click="requestValidation">Request Validation</button>
   </main>
 </template>
 
 <style scoped>
-
-button{
+button {
   /* font-size: 1.5em; */
   padding: 0.3em;
 }
 
-main{
+main {
   display: flex;
   justify-content: center;
   align-items: center;

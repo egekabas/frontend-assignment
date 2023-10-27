@@ -4,13 +4,12 @@ import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["targetId", "targetType", "color"]);
 
-
 const targetId = computed(() => {
   return props.targetId;
 });
 const targetType = computed(() => {
   return props.targetType;
-})
+});
 const color = computed(() => {
   return props.color;
 });
@@ -19,9 +18,7 @@ const content = ref("");
 const emit = defineEmits(["refreshComments"]);
 
 const createComment = async (content: string) => {
-  if(!window.confirm(
-    "Comments can't be edited or deleted afterwards. Are you sure you want to post this comment?"
-  )){
+  if (!window.confirm("Comments can't be edited or deleted afterwards. Are you sure you want to post this comment?")) {
     return;
   }
 
@@ -44,13 +41,11 @@ const emptyForm = () => {
 <template>
   <form @submit.prevent="createComment(content)">
     <textarea id="content" v-model="content" placeholder="Type your comment!" required :class="color"> </textarea>
-    <button type="submit" class = "default">Create Comment</button>
+    <button type="submit" class="default">Create Comment</button>
   </form>
 </template>
 
 <style scoped>
-
-
 form {
   /* background-color: var(--base-bg); */
   /* border-radius: 1em; */
@@ -70,10 +65,10 @@ textarea {
   height: 3em;
 }
 
-.color0{
+.color0 {
   background-color: var(--turqoise);
 }
-.color1{
+.color1 {
   background-color: var(--blue);
 }
 </style>

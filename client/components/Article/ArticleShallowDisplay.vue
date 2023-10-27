@@ -5,7 +5,7 @@ import { fetchy } from "../../utils/fetchy";
 const props = defineProps(["article", "isSubscribed"]);
 const article = computed(() => {
   return props.article;
-})
+});
 const articleLink = computed(() => {
   return `/article?id=${article.value._id}`;
 });
@@ -34,34 +34,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class = "container" :class="{warning: isPaid&&!isSubscribed}">
-    <router-link :to="articleLink" class = "article-link">{{ article.title }}</router-link>
+  <div class="container" :class="{ warning: isPaid && !isSubscribed }">
+    <router-link :to="articleLink" class="article-link">{{ article.title }}</router-link>
     <div>{{ accessMessage }}</div>
   </div>
 </template>
 
-
-
 <style scoped>
-
-.warning{
+.warning {
   background-color: rgb(189, 82, 82);
 }
 
-.container{
+.container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: end;
   margin-left: 30%;
   margin-right: 30%;
-  padding: .3em;
+  padding: 0.3em;
   margin-top: 0.5em;
 }
 
-.article-link{
+.article-link {
   font-size: 1.3em;
   text-align: left;
 }
-
 </style>

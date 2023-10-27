@@ -5,7 +5,7 @@ import { fetchy } from "../../utils/fetchy";
 const props = defineProps(["article"]);
 const article = computed(() => {
   return props.article;
-})
+});
 
 const loading = ref(false);
 const isPaid = ref(true);
@@ -63,85 +63,80 @@ async function makeFree() {
 }
 
 onMounted(async () => {
-  await loadAccess();
-  await loadCommentCnt();
+  await Promise.all([loadAccess(), loadCommentCnt()]);
 });
 </script>
 
 <template>
-  <div class = "main">
-
+  <div class="main">
     <div>
       <router-link :to="articleLink">{{ article.title }}</router-link>
-      <div style="text-size: 0.8em;"> Comments: {{ comments }} </div>
+      <div style="text-size: 0.8em">Comments: {{ comments }}</div>
     </div>
 
-    <div v-if="isPaid" class = "button-container">
+    <div v-if="!loading && isPaid" class="button-container">
       Paid Article
-      <button  @click="makeFree" class = "make-free">Make Free</button>
+      <button @click="makeFree" class="make-free">Make Free</button>
     </div>
-    <div v-else class = "button-container">
+    <div v-else-if="!loading" class="button-container">
       Free Article
-      <button @click="makePaid" class = "make-paid">Make Paid</button>
+      <button @click="makePaid" class="make-paid">Make Paid</button>
     </div>
-
-
-
-
   </div>
 </template>
 
 <style scoped>
-.button-container{
+.button-container {
   display: flex;
   align-items: center;
   gap: 1em;
 }
-.make-free{
+.make-free {
   background-color: var(--bright);
 }
-.make-paid{
+.make-paid {
   background-color: yellow;
 }
 
-button:hover{
-  background:linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
-	background-color:#408c99;
+button:hover {
+  background: linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
+  background-color: #408c99;
 }
 
-.info{
+.info {
   font-size: 0.9em;
   padding-top: 0px;
   text-align: center;
 }
 
-button{
+button {
   background-color: white;
   height: 2.4em;
   width: 4em;
   font-size: 1.2em;
 }
 
-div.main{
+div.main {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  
-  margin-left: 20%; padding-left: 3%;
-  margin-right: 20%;padding-right: 3%;
-  
+
+  margin-left: 20%;
+  padding-left: 3%;
+  margin-right: 20%;
+  padding-right: 3%;
+
   padding-top: 1em;
   padding-bottom: 1em;
-  
+
   border: solid 1px;
   margin-top: 1em;
   margin-bottom: 1em;
 
   background-color: var(--turqoise);
-
 }
 
-*{
+* {
   font-size: 1.1em;
 }
 </style>

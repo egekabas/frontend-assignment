@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-
 const content = ref("");
 const emit = defineEmits(["refreshBio"]);
 
@@ -25,13 +24,12 @@ const emptyForm = () => {
 <template>
   <form @submit.prevent="createBio(content)">
     <textarea id="content" v-model="content" placeholder="Type your bio!" required> </textarea>
-    <button type="submit" class = "default">Create Bio</button>
+    <button type="submit" class="default">Create Bio</button>
   </form>
 </template>
 
 <style scoped>
-
-button{
+button {
   width: 5.5em;
   height: 3em;
 }

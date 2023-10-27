@@ -29,11 +29,10 @@ onMounted(async () => {
 
 <template>
   <main>
+    <div v-if="articles.length" class="article-container">
+      <h1 style="text-align: center">{{ currentUsername }}'s articles</h1>
 
-    <div v-if="articles.length" class = "article-container">
-      <h1 style="text-align: center;">{{ currentUsername }}'s articles</h1>
-      
-      <li v-for="article in articles" :key="article._id" class = "article-list">
+      <li v-for="article in articles" :key="article._id" class="article-list">
         <ArticleManager :article="article" />
       </li>
     </div>
@@ -41,25 +40,23 @@ onMounted(async () => {
     <div v-else>
       <h1>You have no articles yet</h1>
     </div>
-
   </main>
 </template>
 
 <style scoped>
-
 .article-container {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-.article-list{
+.article-list {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-main{
+main {
   background-color: var(--blue);
 }
 </style>
