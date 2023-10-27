@@ -11,7 +11,7 @@ import  CreateBioForm from "@/components/Bio/CreateBioForm.vue";
 
 
 const { currentUsername, validation } = storeToRefs(useUserStore());
-const { logoutUser, deleteUser } = useUserStore();
+const { logoutUser, deleteUser, updateSession } = useUserStore();
 
 
 const activeRequest = ref<false | any>(false);
@@ -72,7 +72,9 @@ async function deleteBio(){
 
   await fetchy("/api/bios", "DELETE");
   loading.value = true;
-  await Promise.all([loadRequest(), loadBio()]);
+  await Promise.all([loadRequest(), loadBio(), updateSession()]);
+
+
   loading.value = false;
 }
 
@@ -105,8 +107,11 @@ onBeforeMount(async () =>{
     </div>    
 
 
-    <div v-if="!validation && bio" class = "validation">
-      <div v-if="activeRequest">
+    <div v-if="!validation" class = "validation">
+      <div v-if= "!bio">
+        <h4>You need a bio to request reporter validation.</h4>
+      </div>
+      <div v-else-if="activeRequest">
         <h4>You last made a validation request on {{ formatDate(activeRequest.date) }}</h4>
       </div>
       <div v-else>

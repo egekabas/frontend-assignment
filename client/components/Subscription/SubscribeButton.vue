@@ -1,31 +1,24 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
-import { ref } from "vue";
+import { ref, computed} from "vue";
 import { storeToRefs } from "pinia";
 import { onBeforeMount } from "vue";
 
-const props = defineProps(["creator"]);
-const creator = ref(props.creator);
+const props = defineProps(["creator", "isSubscribed"]);
+const emit = defineEmits(["loadSubscription"]);
+
+const creator = computed(() => {
+  return props.creator;
+})
+const isSubscribed = computed(() => {
+  return props.isSubscribed;
+})
 
 const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
-const isSubscribed = ref(false);
-const loading = ref(true);
 
-async function checkIfSubscribed() {
-  if (isLoggedIn.value) {
-    let res;
-    try {
-      res = await fetchy("/api/isSubscribed", "GET", {
-        query: { creator: creator.value },
-      });
-    } catch (err) {
-      console.log(err);
-    }
-    isSubscribed.value = res;
-  }
-  loading.value = false;
-}
+const loading = ref(false);
+
 
 async function subscribe() {
   loading.value = true;
@@ -36,7 +29,8 @@ async function subscribe() {
   } catch (err) {
     console.log(err);
   }
-  await checkIfSubscribed();
+  emit("loadSubscription");
+  loading.value = false
 }
 
 async function unsubscribe() {
@@ -48,12 +42,10 @@ async function unsubscribe() {
   } catch (err) {
     console.log(err);
   }
-  await checkIfSubscribed();
+  emit("loadSubscription");
+  loading.value = false
 }
 
-onBeforeMount(async () => {
-  await checkIfSubscribed();
-});
 </script>
 
 <template>

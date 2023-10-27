@@ -16,7 +16,7 @@ async function requestValidation() {
 
 <template>
   <main>
-  <button class="btn btn-primary" @click="requestValidation">Request Validation</button>
+  <button class="btn btn-primary default" @click="requestValidation">Request Validation</button>
   </main>
 </template>
 

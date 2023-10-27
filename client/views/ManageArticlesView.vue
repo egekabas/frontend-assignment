@@ -3,10 +3,9 @@ import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
 import ArticleManager from "../components/Article/ArticleManager.vue";
-import CreateArticleForm from "../components/Article/CreateArticleForm.vue";
 import { fetchy } from "../utils/fetchy";
 
-const { currentUsername, validation } = storeToRefs(useUserStore());
+const { currentUsername } = storeToRefs(useUserStore());
 
 //eslint-disable-next-line
 const articles = ref(Array<any>());
@@ -24,9 +23,7 @@ async function loadArticles() {
 }
 
 onMounted(async () => {
-  if (validation.value) {
-    await loadArticles();
-  }
+  await loadArticles();
 });
 </script>
 
@@ -45,17 +42,6 @@ onMounted(async () => {
       <h1>You have no articles yet</h1>
     </div>
 
-
-    <div style="background-color: var(--turqoise);">
-      <div v-if="validation">
-        <CreateArticleForm @refresh-posts="loadArticles" />
-      </div>
-
-      <div v-else>
-        <h2>Get reporter validation from the <RouterLink to="/manageProfile">Manage Profile</RouterLink>
-            page to post articles!</h2>
-      </div>
-    </div>
   </main>
 </template>
 

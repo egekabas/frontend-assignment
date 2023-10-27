@@ -17,11 +17,6 @@ async function logout() {
 
 <template>
   <main>
-    <!-- <b-dropdown text="dropdown">
-      <b-dropdown-item>First Action</b-dropdown-item>
-      <b-dropdown-item>Second Action</b-dropdown-item>
-      <b-dropdown-item>Third Action</b-dropdown-item>
-    </b-dropdown> -->
 
     <div style="overflow: hidden">
       <button @click="toggle" class = "pure" :style="{fontWeight: isExtended ? 'bold' : 'normal'}">Settings</button>
@@ -29,6 +24,7 @@ async function logout() {
       <div v-if="isExtended" class="expander">
         <RouterLink to="/manageProfile" class="basic-text">Manage Profile</RouterLink>
         <RouterLink to="/manageArticles" class="basic-text">Manage Articles</RouterLink> 
+        <RouterLink to="/createArticle" class="basic-text">Create Article</RouterLink> 
         <button @click="logout" class = "pure right">Logout</button>
       </div>
     </div>
@@ -50,11 +46,11 @@ async function logout() {
   margin-top: .5em;
   padding-right: 2.4em;
   padding-left: 2em;
-  height: 7em;
+  height: 9em;
   width: 4em;
   display: flex;
   flex-direction: column;
-  align-items: right;
+  align-items: stretch;
   justify-content: space-evenly;
 }
 

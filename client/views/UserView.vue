@@ -10,12 +10,12 @@ import { storeToRefs } from "pinia";
 
 
 
-const {currentUsername} = storeToRefs(useUserStore());
+const {currentUsername, isLoggedIn} = storeToRefs(useUserStore());
 
 const props = defineProps(["username"]);
 const username = ref(props.username);
 
-
+const userNotFound = ref(false);
 const loading = ref(true);
 //es-lint-disable-next-line
 const articles = ref(Array<any>());
@@ -39,6 +39,23 @@ async function loadValidation() {
   }
 }
 
+const isSubscribed = ref(false);
+
+async function checkIfSubscribed() {
+  if (isLoggedIn.value) {
+    let res;
+    try {
+      res = await fetchy("/api/isSubscribed", "GET", {
+        query: { creator: username.value },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    isSubscribed.value = res;
+  }
+  loading.value = false;
+}
+
 const bio = ref("");
 async function loadBio() {
   let res;
@@ -60,14 +77,22 @@ async function loadArticles() {
   let res;
   const query = { author: username.value };
   try {
-    res = await fetchy("/api/articles/noContent", "GET", { query });
+    res = await fetchy("/api/articles/noContent", "GET", { query, alert: false });
   } catch (e) {
-    return;
+    if(e.toString() === "Error: User not found!"){
+      userNotFound.value = true;
+    } else{
+      useToastStore().showToast({ message: e as string, style: "error" });
+    }
   }
   articles.value = res;
 }
+
 onBeforeMount(async () => {
-  await Promise.all([loadArticles(), loadBio(), loadValidation()]);
+  await loadArticles();
+  if(!userNotFound.value){
+    await Promise.all([loadBio(), loadValidation(), checkIfSubscribed()]);
+  }
   loading.value = false;
 
 });
@@ -76,7 +101,7 @@ onBeforeMount(async () => {
 <template>
 
   <div v-if="loading" style="font-size: 3em; text-align: center;">Loading</div>
-
+  <h1 v-else-if="userNotFound"> USER NOT FOUND</h1>
   <main v-else>
 
     <div class="user-info">
@@ -96,12 +121,9 @@ onBeforeMount(async () => {
     
     <div v-if="articles.length">
       <h2>Articles</h2>
-
-
-      <SubscribeButton :creator="username" />
-      
+      <SubscribeButton :creator="username" :is-subscribed="isSubscribed" @load-subscription="checkIfSubscribed"/>
       <li v-for="article in articles" :key="article._id" class = articles>
-        <ArticleShallowDisplay :article="article" />
+        <ArticleShallowDisplay :article="article" :is-subscribed="isSubscribed"/>
       </li>
     </div>
     <h2 v-else>This user doesnt have any articles (yet?)</h2>

@@ -109,7 +109,7 @@ onBeforeMount(async () => {
         
         <div v-if="comments.length">
           <div class = "center">
-            <h3 style="text-align: center;"> Or look at and comment to other comments</h3>
+            <h3 style="text-align: center; margin-bottom: 2em;"> Or look at and comment to other comments</h3>
           </div>
 
           <li v-for="(comment, idx) in comments" :key="comment._id" class="comment-containter">

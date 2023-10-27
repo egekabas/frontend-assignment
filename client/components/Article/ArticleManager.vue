@@ -3,7 +3,9 @@ import { computed, onMounted, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["article"]);
-const article = ref(props.article);
+const article = computed(() => {
+  return props.article;
+})
 
 const loading = ref(false);
 const isPaid = ref(true);
@@ -67,24 +69,45 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main>
+  <div class = "main">
 
     <div>
       <router-link :to="articleLink">{{ article.title }}</router-link>
       <div style="text-size: 0.8em;"> Comments: {{ comments }} </div>
     </div>
 
-    <button v-if="isPaid" class="btn btn-primary" @click="makeFree">Make Free</button>
+    <div v-if="isPaid" class = "button-container">
+      Paid Article
+      <button  @click="makeFree" class = "make-free">Make Free</button>
+    </div>
+    <div v-else class = "button-container">
+      Free Article
+      <button @click="makePaid" class = "make-paid">Make Paid</button>
+    </div>
 
-    <button v-else class="btn btn-primary" @click="makePaid">Make Paid</button>
 
 
 
-  </main>
+  </div>
 </template>
 
 <style scoped>
+.button-container{
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.make-free{
+  background-color: var(--bright);
+}
+.make-paid{
+  background-color: yellow;
+}
 
+button:hover{
+  background:linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
+	background-color:#408c99;
+}
 
 .info{
   font-size: 0.9em;
@@ -99,7 +122,7 @@ button{
   font-size: 1.2em;
 }
 
-main{
+div.main{
   display: flex;
   justify-content: space-between;
   align-items: stretch;
@@ -114,7 +137,8 @@ main{
   margin-top: 1em;
   margin-bottom: 1em;
 
-  background-color: --var(blue);
+  background-color: var(--turqoise);
+
 }
 
 *{

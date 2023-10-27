@@ -25,7 +25,7 @@ const emptyForm = () => {
 <template>
   <form @submit.prevent="createBio(content)">
     <textarea id="content" v-model="content" placeholder="Type your bio!" required> </textarea>
-    <button type="submit">Create Bio</button>
+    <button type="submit" class = "default">Create Bio</button>
   </form>
 </template>
 

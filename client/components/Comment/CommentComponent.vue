@@ -6,23 +6,32 @@ import LinkToUser from "../User/LinkToUser.vue";
 
 const props = defineProps(["comment", "index"]);
 
+const index = computed(() => {
+  return props.index;
+});
+
 const curComment = ref(props.comment);
 //es-lint-disable-next-line
 const prtComments = ref(Array<any>());
 //es-lint-disable-next-line
 const subComments = ref(Array<any>());
 
+const targetId = computed(() => {
+  return curComment.value._id;
+});
+
+
 const colorStyle = computed(() => {
-  return props.index%2 == 0 ? "color0": "color1";
+  return index.value%2 == 0 ? "color0": "color1";
 })
 
 const commentColor = computed(() => {
-  return props.index%2 == 0 ? "color1": "color0";
+  return index.value%2 == 0 ? "color1": "color0";
 })
 
 async function loadsubComments() {
   let res;
-  let query = { targetId: curComment.value._id };
+  let query = {targetId: targetId.value };
   try {
     res = await fetchy("api/comments/toComment", "GET", { query });
   } catch (e) {
@@ -66,7 +75,7 @@ onBeforeMount(async () => {
       </div>
 
       <div  class = "center">
-        <CreateCommentForm :targetId="curComment._id" targetType="comment" @refreshComments="loadsubComments" :color="commentColor"/>
+        <CreateCommentForm :targetId="targetId" targetType="comment" @refreshComments="loadsubComments" :color="commentColor"/>
       </div>
 
     </div>

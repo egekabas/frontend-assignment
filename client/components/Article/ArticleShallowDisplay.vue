@@ -2,11 +2,17 @@
 import { computed, defineProps, onMounted, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-const props = defineProps(["article"]);
-const article = ref(props.article);
+const props = defineProps(["article", "isSubscribed"]);
+const article = computed(() => {
+  return props.article;
+})
 const articleLink = computed(() => {
   return `/article?id=${article.value._id}`;
 });
+const isSubscribed = computed(() => {
+  return props.isSubscribed;
+});
+
 const isPaid = ref(false);
 const accessMessage = computed(() => (isPaid.value ? "Paid Article" : "Free Article"));
 
@@ -28,7 +34,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class = "container">
+  <div class = "container" :class="{warning: isPaid&&!isSubscribed}">
     <router-link :to="articleLink" class = "article-link">{{ article.title }}</router-link>
     <div>{{ accessMessage }}</div>
   </div>
@@ -38,13 +44,18 @@ onMounted(async () => {
 
 <style scoped>
 
+.warning{
+  background-color: rgb(189, 82, 82);
+}
+
 .container{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: end;
-  padding-left: 30%;
-  padding-right: 30%;
+  margin-left: 30%;
+  margin-right: 30%;
+  padding: .3em;
   margin-top: 0.5em;
 }
 

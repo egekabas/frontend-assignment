@@ -1,20 +1,34 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["targetId", "targetType", "color"]);
-const targetId = ref(props.targetId);
-const targetType = ref(props.targetType);
-const color = ref(props.color);
+
+
+const targetId = computed(() => {
+  return props.targetId;
+});
+const targetType = computed(() => {
+  return props.targetType;
+})
+const color = computed(() => {
+  return props.color;
+});
 
 const content = ref("");
 const emit = defineEmits(["refreshComments"]);
 
 const createComment = async (content: string) => {
-  const body = { content, targetId };
+  if(!window.confirm(
+    "Comments can't be edited or deleted afterwards. Are you sure you want to post this comment?"
+  )){
+    return;
+  }
+
+  const body = { content, targetId: targetId.value };
   try {
-    if (targetType === "article") await fetchy("api/comments/toArticle", "POST", { body });
-    else if (targetType === "comment") await fetchy("api/comments/toComment", "POST", { body });
+    if (targetType.value === "article") await fetchy("api/comments/toArticle", "POST", { body });
+    else if (targetType.value === "comment") await fetchy("api/comments/toComment", "POST", { body });
   } catch (_) {
     return;
   }
@@ -37,9 +51,6 @@ const emptyForm = () => {
 <style scoped>
 
 
-
-
-
 form {
   /* background-color: var(--base-bg); */
   /* border-radius: 1em; */
@@ -49,7 +60,6 @@ form {
 }
 
 textarea {
-
   font-family: inherit;
   font-size: inherit;
   /* height: 3em;

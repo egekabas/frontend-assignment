@@ -10,6 +10,8 @@ import ManageProfile from "../views/ManageProfile.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import UserView from "../views/UserView.vue";
 import ListUsersViews from "../views/ListUsersView.vue";
+import AdminView from "@/views/AdminView.vue";
+import CreateArticleView from "@/views/CreateArticleView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -61,6 +63,18 @@ const router = createRouter({
       path: "/manageArticles",
       name: "Manage Articles",
       component: ManageArticlesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/admin",
+      name: "Admin",
+      component: AdminView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/createArticle",
+      name: "Create Article",
+      component: CreateArticleView,
       meta: { requiresAuth: true },
     },
     {
