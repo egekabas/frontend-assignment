@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import ArticleShallowDisplay from "@/components/Article/ArticleShallowDisplay.vue";
 import SubscribeButton from "@/components/Subscription/SubscribeButton.vue";
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
 import { useToastStore } from "../stores/toast";
 import { fetchy } from "../utils/fetchy";
 import { formatDate } from "../utils/formatDate";
-import { useUserStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
 
-
-
-const {currentUsername, isLoggedIn} = storeToRefs(useUserStore());
+const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
 const props = defineProps(["username"]);
 const username = ref(props.username);
@@ -79,9 +77,9 @@ async function loadArticles() {
   try {
     res = await fetchy("/api/articles/noContent", "GET", { query, alert: false });
   } catch (e) {
-    if(e.toString() === "Error: User not found!"){
+    if (e == "Error: User not found!") {
       userNotFound.value = true;
-    } else{
+    } else {
       useToastStore().showToast({ message: e as string, style: "error" });
     }
   }
@@ -90,22 +88,22 @@ async function loadArticles() {
 
 onBeforeMount(async () => {
   await loadArticles();
-  if(!userNotFound.value){
+  if (!userNotFound.value) {
     await Promise.all([loadBio(), loadValidation(), checkIfSubscribed()]);
   }
   loading.value = false;
-
 });
 </script>
 
 <template>
-
-  <div v-if="loading" style="font-size: 3em; text-align: center;">Loading</div>
-  <h1 v-else-if="userNotFound"> USER NOT FOUND</h1>
+  <div v-if="loading" style="font-size: 3em; text-align: center">Loading</div>
+  <h1 v-else-if="userNotFound">USER NOT FOUND</h1>
   <main v-else>
-
     <div class="user-info">
-      <h1>{{ username }} <div v-if="username==currentUsername">(this is you!)</div></h1>
+      <h1>
+        {{ username }}
+        <div v-if="username == currentUsername">(this is you!)</div>
+      </h1>
       <div v-if="userValidation">
         <div>Validated Reporter since {{ formatDate(userValidation.dateCreated) }}</div>
       </div>
@@ -118,12 +116,11 @@ onBeforeMount(async () => {
       </p>
     </div>
 
-    
     <div v-if="articles.length">
       <h2>Articles</h2>
-      <SubscribeButton :creator="username" :is-subscribed="isSubscribed" @load-subscription="checkIfSubscribed"/>
-      <li v-for="article in articles" :key="article._id" class = articles>
-        <ArticleShallowDisplay :article="article" :is-subscribed="isSubscribed"/>
+      <SubscribeButton :creator="username" :is-subscribed="isSubscribed" @load-subscription="checkIfSubscribed" />
+      <li v-for="article in articles" :key="article._id" class="articles">
+        <ArticleShallowDisplay :article="article" :is-subscribed="isSubscribed" />
       </li>
     </div>
     <h2 v-else>This user doesnt have any articles (yet?)</h2>
@@ -133,7 +130,7 @@ onBeforeMount(async () => {
 <style scoped>
 @import "@/assets/main.css";
 
-.bio{
+.bio {
   background-color: var(--turqoise);
 }
 .articles {
@@ -150,7 +147,7 @@ onBeforeMount(async () => {
   padding-bottom: 2em;
 }
 
-main{
+main {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
