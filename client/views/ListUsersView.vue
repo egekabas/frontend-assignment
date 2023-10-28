@@ -41,13 +41,13 @@ onBeforeMount(async () => {
 <template>
   <main v-if="!loading">
     <h2>Validated Users</h2>
-    <div v-for="[user, articleCnt] in validatedUsers" class="user-view">
+    <div v-for="([user, articleCnt], idx) in validatedUsers" class="user-view" v-bind:key="idx">
       <LinkToUser :user="user" class="large-font" />
       <div>{{ articleCnt }} articles</div>
     </div>
 
     <h2>Non Validated Users</h2>
-    <div v-for="[user, articleCnt] in nonValidatedUsers" class="user-view">
+    <div v-for="([user, articleCnt], idx) in nonValidatedUsers" class="user-view" v-bind:key="idx">
       <LinkToUser :user="user" class="large-font" />
       <div>{{ articleCnt }} articles</div>
     </div>

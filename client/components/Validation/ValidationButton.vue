@@ -4,7 +4,7 @@ import { fetchy } from "@/utils/fetchy";
 const emit = defineEmits(["requestValidation"]);
 
 async function requestValidation() {
-  const res = await fetchy("/api/validation/request", "POST");
+  await fetchy("/api/validation/request", "POST");
   emit("requestValidation");
 }
 </script>

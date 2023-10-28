@@ -41,7 +41,7 @@ onBeforeMount(async () => {
     <div v-if="currentUsername != 'root'">Need Admin Access for this page</div>
     <div v-else style="text-align: center">
       <h>Validation Requests</h>
-      <div v-for="request in requests">
+      <div v-for="request in requests" v-bind:key="request._id">
         Validation request by <LinkToUser :user="request.user" />
         <button @click="() => approveRequest(request.user)">Approve Request</button>
         <button @click="() => rejectRequest(request.user)">Reject Request</button>

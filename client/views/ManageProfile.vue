@@ -10,16 +10,11 @@ import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
 
 const { currentUsername, validation } = storeToRefs(useUserStore());
-const { logoutUser, deleteUser, updateSession } = useUserStore();
+const { deleteUser, updateSession } = useUserStore();
 
 const activeRequest = ref<false | any>(false);
 const bio = ref<false | any>(false);
 const loading = ref(true);
-
-async function logout() {
-  await logoutUser();
-  void router.push({ name: "Home" });
-}
 
 async function delete_user() {
   if (!window.confirm("Are you sure?")) {
